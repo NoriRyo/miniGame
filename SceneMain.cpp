@@ -199,9 +199,15 @@ void SceneMain::draw()
 		}
 	}
 	
+
+#if true
+
 	//ÉvÉåÉCÉÑÅ[ÇÃï`âÊ
-	//DrawBox(MouseX - hsize, MouseY - hsize, 
-	//	MouseX + PlayerkSize - hsize, MouseY + PlayerkSize - hsize, PrayerCollar, true);
+	DrawBox(MouseX - hsize, MouseY - hsize, 
+		MouseX + PlayerkSize - hsize, MouseY + PlayerkSize - hsize, PrayerCollar, true);
+
+#else
+
 	if (p_map.StageNumber == 9 || p_map.StageNumber == 17)
 	{
 		DrawGraph(MouseX - hsize, MouseY - hsize, kPrayerGraphic, TRUE);
@@ -210,6 +216,7 @@ void SceneMain::draw()
 	{
 		DrawTurnGraph(MouseX - hsize, MouseY - hsize, kPrayerGraphic, TRUE);
 	}
+#endif
 }
 
 int SceneMain::HitCheck(float mouseX, float mouseY)
