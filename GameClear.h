@@ -31,6 +31,8 @@ private:
 	// タイトル背景
 	int m_hBg;
 
+	int playerHandle;
+
 	// テキスト点滅用フレームカウント
 	int m_textBlinkFrame;
 	// サウンド

@@ -4,7 +4,7 @@
 #include "SceneBase.h"
 #include "GameOver.h"
 #include "GameClear.h"
-
+#include "warp.h"
 namespace
 {
 	// マップ情報
@@ -38,26 +38,31 @@ namespace
 
 	const int kFontColor = GetColor(255, 255, 255);
 
-	//// マップ
-	//constexpr int kMapData[kMapSizeY][kMapSizeX] =
-	//{
-	//	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	//	{1,0,0,0,0,0,0,0,0,0,0,0,0,2,2,1},
-	//	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-	//};
+	const char* const kWarpGraphicFilename = "data/warp.png";
+
+
+	// マップ
+	constexpr int kMapData[kMapSizeY][kMapSizeX] =
+	{
+
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+		{1,1,1,0,0,0,0,0,0,0,0,0,0,3,3,1},
+		{1,1,1,1,0,0,0,0,0,0,0,0,0,3,3,1},
+		{1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,1},
+		{1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1},
+		{1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1},
+		{1,0,0,0,0,0,0,0,0,0,0,1,1,1,0,1},
+		{1,2,2,0,0,0,0,0,0,0,0,0,1,1,1,1},
+		{1,2,2,0,0,0,0,0,0,0,0,0,0,1,1,1},
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+
+	};
 }
 
 SceneMain::SceneMain() :
@@ -70,6 +75,10 @@ SceneMain::SceneMain() :
 	Goal()
 	//FrameCount()
 {
+	for (auto& WarpHandle : m_hWarpGraphic)
+	{
+		WarpHandle = -1;
+	}
 }
 SceneMain::~SceneMain()
 {
@@ -89,11 +98,35 @@ void SceneMain::init()
 	MouseY = 0;
 	Goal = true;
 	m_textBlinkFrame = 0;
+
+	LoadDivGraph(kWarpGraphicFilename, warp::kWarpGraphicDivNum,
+		warp::kGraphicDivX, warp::kGraphicDivY,
+		warp::kGraphicSizeX, warp::kGraphicSizeY, m_hWarpGraphic);
+
+	for (int i = 0; i < warp::kWarpGraphicDivNum; i++)
+	{
+		m_pWarp.setHandle(i, m_hWarpGraphic[i]);
+	}
+
+	kIceBoxGraphic = LoadGraph("data/IceBox.png");
+	kIceBox1Graphic = LoadGraph("data/IceBox1.png");
+	ksnowmoutianGraphic = LoadGraph("data/snowmoutian.png");
+	kPrayerGraphic = LoadGraph("data/py.png");
+
+	m_pWarp.init();
+}
+void SceneMain::end()
+{
+	for (auto& handle : m_hWarpGraphic)
+	{
+		DeleteGraph(m_hWarpGraphic[2]);
+	}
 }
 SceneBase* SceneMain::update()
 {
 	clsDx();
 	p_map.update();
+	m_pWarp.Update();
 	//int padState = GetJoypadInputState(DX_INPUT_KEY_PAD1)
 	if (CheckHitKey(KEY_INPUT_3))
 	{
@@ -165,10 +198,7 @@ SceneBase* SceneMain::update()
 void SceneMain::draw()
 {
 	DrawBox(0,0, 1000,1000, 0xffffff,true);
-	int kIceBoxGraphic = LoadGraph("data/IceBox.png");
-	int kIceBox1Graphic = LoadGraph("data/IceBox1.png");
-	int ksnowmoutianGraphic = LoadGraph("data/snowmoutian.png");
-	int kPrayerGraphic = LoadGraph("data/py.png");
+	
 	DrawExtendGraph(0, 0,1000,1000, ksnowmoutianGraphic, true);
 	//マップの描画
 	for (int x = 0; x < kMapSizeX; x++)
@@ -185,8 +215,10 @@ void SceneMain::draw()
 			}
 			if (p_map.kMapData[y][x] == kGoal)
 			{
-				DrawBox(x * kSize, y * kSize,
-					x * kSize + kSize, y * kSize + kSize, 0xffff00, true);
+				//DrawBox(x * kSize, y * kSize,
+				//	x * kSize + kSize, y * kSize + kSize, 0xffff00, true);
+				DrawGraph(x * kSize, y * kSize, m_pWarp.m_handle[m_pWarp.m_animeNo], true);
+
 			}
 		}
 	}
@@ -198,25 +230,28 @@ void SceneMain::draw()
 			DrawString(768 / 2 - width / 2, 280, kGuideText, kFontColor);
 		}
 	}
-	
+	else
+	{
+#if false
 
-#if true
-
-	//プレイヤーの描画
-	DrawBox(MouseX - hsize, MouseY - hsize, 
-		MouseX + PlayerkSize - hsize, MouseY + PlayerkSize - hsize, PrayerCollar, true);
+		//プレイヤーの描画
+		DrawBox(MouseX - hsize, MouseY - hsize,
+			MouseX + PlayerkSize - hsize, MouseY + PlayerkSize - hsize, PrayerCollar, true);
 
 #else
 
-	if (p_map.StageNumber == 9 || p_map.StageNumber == 17)
-	{
-		DrawGraph(MouseX - hsize, MouseY - hsize, kPrayerGraphic, TRUE);
-	}
-	else
-	{
-		DrawTurnGraph(MouseX - hsize, MouseY - hsize, kPrayerGraphic, TRUE);
-	}
+		if (p_map.StageNumber == 9 || p_map.StageNumber == 17)
+		{
+			DrawGraph(MouseX - hsize, MouseY - hsize, kPrayerGraphic, TRUE);
+		}
+		else
+		{
+			DrawTurnGraph(MouseX - hsize, MouseY - hsize, kPrayerGraphic, TRUE);
+		}
 #endif
+	}
+
+
 }
 
 int SceneMain::HitCheck(float mouseX, float mouseY)
@@ -263,8 +298,8 @@ int SceneMain::GetChipParam(float X, float Y)
 	}
 	if (p_map.kMapData[y][x] == kCrackedWall)
 	{
-		//p_map.kMapData[y][x] = 0;
-		//return kCrackedHit;
+		p_map.kMapData[y][x] = 0;
+		return kCrackedHit;
 	}
 	return 0;
 }

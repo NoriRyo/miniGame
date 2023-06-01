@@ -21,6 +21,7 @@ public:
 private:
 	// タイトル背景
 	int m_hBg;
+	int m_hTg;
 
 	// テキスト点滅用フレームカウント
 	int m_textBlinkFrame;

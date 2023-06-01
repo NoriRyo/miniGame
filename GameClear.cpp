@@ -37,7 +37,7 @@ void GameClear::init()
 	m_textBlinkFrame = 0;
 	SetFontSize(64);
 	// サウンド
-	ClearBGMHandle = LoadSoundMem("sound/CLEARBGM.wav");
+	//ClearBGMHandle = LoadSoundMem("sound/CLEARBGM.wav");
 	//PlaySoundMem(ClearBGMHandle, DX_PLAYTYPE_LOOP);
 
 	// フォント
@@ -47,8 +47,9 @@ void GameClear::init()
 	SetAlwaysRunFlag(true);
 
 	sinRate = 0.0f;
-
 	gameScreen = LoadGraph("data/kk.png");
+	playerHandle = LoadGraph("data/pHappy.png");
+
 	effectScreen = MakeScreen(Game::kScreenWidth, Game::kScreenHeight, true);
 
 	for (int i = 0; i < kParticleNum; i++)
@@ -71,8 +72,9 @@ void GameClear::init()
 void GameClear::end()
 {
 	SetFontSize(16);
-	DeleteGraph(gameScreen);
+	//DeleteGraph(gameScreen);
 	DeleteGraph(effectScreen);
+	DeleteGraph(playerHandle);
 }
 
 SceneBase* GameClear::update()
@@ -148,8 +150,9 @@ void GameClear::draw()
 	SetDrawScreen(DX_SCREEN_BACK);
 	// 画面のクリア
 	ClearDrawScreen();
-
+	
 	DrawGraph(0, 0, gameScreen, true);
+	
 
 	//加算合成する
 	SetDrawBlendMode(DX_BLENDMODE_ADD, 192);
@@ -175,7 +178,7 @@ void GameClear::draw()
 	std::string temp = kTitleText;
 	int width = GetDrawStringWidth(kTitleText, static_cast<int>(strlen(kTitleText)));
 	charX = Game::kScreenWidth / 2 - width / 2 - 160;
-	charY = 160;
+	charY = 300;
 
 	SetFontSize(64);
 
@@ -189,6 +192,12 @@ void GameClear::draw()
 	//// しょ
 	//int width2 = GetDrawStringWidth(kAText, static_cast<int>(strlen(kAText)));
 	//DrawString(Game::kScreenWidth / 2 - width2 / 2, 580, kAText, kFontColorA);
+	
+	
+	// キャラクター
+	DrawGraph(0, 150, playerHandle, true);
+
+
 
 	while (1)
 	{
@@ -213,6 +222,6 @@ void GameClear::draw()
 		byteCount += size;
 
 	}
-
+	
 	SceneBase::drawFade();
 }

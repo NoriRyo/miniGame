@@ -26,6 +26,7 @@ void SceneTitle::init()
 	SetFontSize(32);
 
 	m_hBg = LoadGraph("Data/BG.png");
+	m_hTg = LoadGraph("Data/iraira.png");
 }
 
 void SceneTitle::end()
@@ -72,14 +73,15 @@ SceneBase* SceneTitle::update()
 void SceneTitle::draw()
 {
 	DrawGraph(0, 0, m_hBg, false);
+	DrawGraph(64, 160, m_hTg, true);
 
 	int width = GetDrawStringWidth(kTitleText, static_cast<int>(strlen(kTitleText)));
-	DrawString(Game::kScreenWidth / 2 - width / 2, 160, kTitleText, kTitleFontColor);
+	//DrawString(Game::kScreenWidth / 2 - width / 2, 160, kTitleText, kTitleFontColor);
 
 	if (m_textBlinkFrame < kTextDispFrame)
 	{
 		width = GetDrawStringWidth(kGuideText, static_cast<int>(strlen(kGuideText)));
-		DrawString(Game::kScreenWidth / 2 - width / 2, 280, kGuideText, kFontColor);
+		DrawString(Game::kScreenWidth / 2 - width / 2, 580, kGuideText, kFontColor);
 	}
 
 	SceneBase::drawFade();
