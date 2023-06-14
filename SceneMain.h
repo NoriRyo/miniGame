@@ -35,7 +35,12 @@ private:
 	int ksnowmoutianGraphic;
 	int kPrayerGraphic;
 
-	//int FrameCount; //フレームカウント
+	//サウンド
+	int kCrackSoundHandle;
+	int kWarpSoundHandle;
+	int kBGMHandle;
+	int ClickSoundHandle;
+
 	int m_hWarpGraphic[warp::kWarpGraphicDivNum];
 	Map p_map;
 	warp m_pWarp;

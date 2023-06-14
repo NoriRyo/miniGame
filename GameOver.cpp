@@ -25,17 +25,23 @@ GameOver::GameOver()
 {
 	m_hBg = -1;
 	m_textBlinkFrame = 0;
+	OBGMHandle = 0;
 }
 void GameOver::init()
 {
 	m_textBlinkFrame = 0;
 	SetFontSize(32);
 	m_hBg = LoadGraph("Data/OGB.png");
+	// ƒTƒEƒ“ƒh
+	OBGMHandle = LoadSoundMem("sound/OBGM.wav");
+	ChangeVolumeSoundMem(255 * 50 / 100, OBGMHandle);
+	PlaySoundMem(OBGMHandle, DX_PLAYTYPE_LOOP);
 }
 
 void GameOver::end()
 {
 	SetFontSize(16);
+	DeleteSoundMem(OBGMHandle);
 }
 
 SceneBase* GameOver::update()

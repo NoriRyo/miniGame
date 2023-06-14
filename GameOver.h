@@ -19,5 +19,8 @@ private:
 
 	// テキスト点滅用フレームカウント
 	int m_textBlinkFrame;
+
+	// サウンド
+	int OBGMHandle;
 };
 

@@ -72,8 +72,9 @@ SceneMain::SceneMain() :
 	PrayerCollar(),
 	death(),
 	hsize(),
-	Goal()
-	//FrameCount()
+	Goal(),
+	kCrackSoundHandle(),
+	ClickSoundHandle()
 {
 	for (auto& WarpHandle : m_hWarpGraphic)
 	{
@@ -108,11 +109,17 @@ void SceneMain::init()
 		m_pWarp.setHandle(i, m_hWarpGraphic[i]);
 	}
 
+	//画像
 	kIceBoxGraphic = LoadGraph("data/IceBox.png");
 	kIceBox1Graphic = LoadGraph("data/IceBox1.png");
 	ksnowmoutianGraphic = LoadGraph("data/snowmoutian.png");
 	kPrayerGraphic = LoadGraph("data/py.png");
 
+	//サウンド
+	kCrackSoundHandle = LoadSoundMem("sound/Crack.mp3");
+	kWarpSoundHandle = LoadSoundMem("sound/Warp.wav");
+	kBGMHandle = LoadSoundMem("sound/BGM.wav");
+	ClickSoundHandle = LoadSoundMem("sound/Click.wav");
 	m_pWarp.init();
 }
 void SceneMain::end()
@@ -121,6 +128,10 @@ void SceneMain::end()
 	{
 		DeleteGraph(m_hWarpGraphic[2]);
 	}
+	DeleteSoundMem(kCrackSoundHandle);
+	DeleteSoundMem(kWarpSoundHandle);
+	DeleteSoundMem(kBGMHandle);
+	DeleteSoundMem(ClickSoundHandle);
 }
 SceneBase* SceneMain::update()
 {
@@ -131,8 +142,8 @@ SceneBase* SceneMain::update()
 	if (CheckHitKey(KEY_INPUT_3))
 	{
 		p_map.StageNumber = 15;
-	}
 
+	}
 	
 	// 死んでいたらGameOverへ
 	if (death == false)
@@ -144,6 +155,7 @@ SceneBase* SceneMain::update()
 	// ゴールしたら次のステージへ
 	if (Goal == false)
 	{
+		PlaySoundMem(kWarpSoundHandle, DX_PLAYTYPE_BACK);
 		Goal = true;
 		p_map.StageNumber ++;
 	}
@@ -154,9 +166,6 @@ SceneBase* SceneMain::update()
 		keyPressed = false;
 		return(new GameClear);
 	}
-
-	//printfDx("St = %d", p_map.StageNumber);
-	//printfDx("Fc = %d", FrameCount);
 
 	// マウスカーソルを表示する
 	SetMouseDispFlag(true);
@@ -182,6 +191,9 @@ SceneBase* SceneMain::update()
 	//マウスの左クリックを取得する
 	if ((GetMouseInput() & MOUSE_INPUT_LEFT) != 0)
 	{
+		ChangeVolumeSoundMem(255 * 80 / 100, ClickSoundHandle);
+		PlaySoundMem(ClickSoundHandle, DX_PLAYTYPE_BACK);
+		ClickSoundHandle = 0;
 		PrayerCollar = 0xfff00ff;
 		keyPressed = true;
 	}
@@ -198,7 +210,7 @@ SceneBase* SceneMain::update()
 void SceneMain::draw()
 {
 	DrawBox(0,0, 1000,1000, 0xffffff,true);
-	
+
 	DrawExtendGraph(0, 0,1000,1000, ksnowmoutianGraphic, true);
 	//マップの描画
 	for (int x = 0; x < kMapSizeX; x++)
@@ -224,6 +236,8 @@ void SceneMain::draw()
 	}
 	if (keyPressed == false)
 	{
+		ChangeVolumeSoundMem(255 * 50 / 100, kBGMHandle);
+		PlaySoundMem(kBGMHandle, DX_PLAYTYPE_LOOP);
 		if (m_textBlinkFrame < kTextDispFrame)
 		{
 			int width = GetDrawStringWidth(kGuideText, static_cast<int>(strlen(kGuideText)));
@@ -299,6 +313,7 @@ int SceneMain::GetChipParam(float X, float Y)
 	if (p_map.kMapData[y][x] == kCrackedWall)
 	{
 		p_map.kMapData[y][x] = 0;
+		PlaySoundMem(kCrackSoundHandle, DX_PLAYTYPE_BACK);
 		return kCrackedHit;
 	}
 	return 0;

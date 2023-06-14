@@ -33,12 +33,12 @@ namespace
 }
 void GameClear::init()
 {
-	Volume = 0;
 	m_textBlinkFrame = 0;
 	SetFontSize(64);
 	// サウンド
-	//ClearBGMHandle = LoadSoundMem("sound/CLEARBGM.wav");
-	//PlaySoundMem(ClearBGMHandle, DX_PLAYTYPE_LOOP);
+	ClearBGMHandle = LoadSoundMem("sound/CBGM.wav");
+	ChangeVolumeSoundMem(255 * 50 / 100, ClearBGMHandle);
+	PlaySoundMem(ClearBGMHandle, DX_PLAYTYPE_LOOP);
 
 	// フォント
 	fontHandle = CreateFontToHandle("Showcard Gothic", 120, -1, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
@@ -75,6 +75,7 @@ void GameClear::end()
 	//DeleteGraph(gameScreen);
 	DeleteGraph(effectScreen);
 	DeleteGraph(playerHandle);
+	DeleteGraph(ClearBGMHandle);
 }
 
 SceneBase* GameClear::update()
@@ -83,7 +84,6 @@ SceneBase* GameClear::update()
 	{
 		Volume++;
 	}
-	ChangeVolumeSoundMem(255 * Volume / 100, ClearBGMHandle);
 	for (int i = 0; i < kParticleNum; i++)
 	{
 		pos[i] += vec[i];

@@ -27,11 +27,22 @@ void SceneTitle::init()
 
 	m_hBg = LoadGraph("Data/BG.png");
 	m_hTg = LoadGraph("Data/iraira.png");
+
+	// サウンド
+	TitleBGMHandle = LoadSoundMem("sound/TBGM.wav");
+	ChangeVolumeSoundMem(255 * 50 / 100, TitleBGMHandle);
+	PlaySoundMem(TitleBGMHandle, DX_PLAYTYPE_LOOP);
+
+	ClickSoundHandle = LoadSoundMem("sound/Click.wav");
+	ChangeVolumeSoundMem(255 * 80 / 100, ClickSoundHandle);
+	
 }
 
 void SceneTitle::end()
 {
 	SetFontSize(16);
+	DeleteSoundMem(TitleBGMHandle);
+	DeleteSoundMem(ClickSoundHandle);
 }
 
 SceneBase* SceneTitle::update()
@@ -63,6 +74,7 @@ SceneBase* SceneTitle::update()
 		// 左ボタンが押された
 		if ((GetMouseInput() & MOUSE_INPUT_LEFT) != 0)
 		{
+			PlaySoundMem(ClickSoundHandle, DX_PLAYTYPE_BACK);
 			// フェードアウト開始
 			startFadeOut();
 		}

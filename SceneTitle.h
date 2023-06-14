@@ -9,6 +9,8 @@ public:
 	{
 		m_hBg = -1;
 		m_textBlinkFrame = 0;
+		TitleBGMHandle = 0;
+		ClickSoundHandle = 0;
 	}
 	virtual ~SceneTitle() {}
 
@@ -25,4 +27,9 @@ private:
 
 	// テキスト点滅用フレームカウント
 	int m_textBlinkFrame;
+
+	// サウンド
+	int TitleBGMHandle;
+
+	int ClickSoundHandle;
 };
